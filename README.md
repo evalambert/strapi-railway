@@ -66,4 +66,10 @@ This is a Strapi application configured for deployment on Railway.
 
 ## Deployment Status
 
-Last updated: March 4, 2024
+Last updated: March 4, 2024 - 17:00
+
+## Environment Variables
+
+- All environment variables are properly configured
+- Database connection is set up with SSL
+- Strapi admin panel is configured with Railway domain
