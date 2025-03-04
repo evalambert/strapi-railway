@@ -73,3 +73,138 @@ Last updated: March 4, 2024 - 17:00
 - All environment variables are properly configured
 - Database connection is set up with SSL
 - Strapi admin panel is configured with Railway domain
+
+# Déploiement de Strapi sur Railway
+
+Ce guide explique comment déployer une application Strapi sur Railway avec une base de données PostgreSQL.
+
+## Prérequis
+
+- Un compte [Railway](https://railway.app/)
+- Un compte [GitHub](https://github.com/)
+- Node.js installé localement
+
+## Étapes de déploiement
+
+### 1. Création du projet Strapi
+
+```bash
+# Créer un nouveau projet Strapi
+npx create-strapi-app@latest my-project
+cd my-project
+
+# Initialiser Git
+git init
+git add .
+git commit -m "Initial commit"
+```
+
+### 2. Configuration de Railway
+
+1. Créer un nouveau projet sur Railway
+2. Ajouter un service PostgreSQL
+3. Ajouter un service depuis GitHub
+   - Sélectionner votre repository
+   - Choisir la branche main
+
+### 3. Configuration des variables d'environnement
+
+#### Dans le service Strapi :
+
+```env
+# Server
+HOST=0.0.0.0
+PORT=1337
+
+# Secrets
+APP_KEYS="votre_app_keys"
+API_TOKEN_SALT="votre_salt"
+ADMIN_JWT_SECRET="votre_jwt_secret"
+TRANSFER_TOKEN_SALT="votre_transfer_salt"
+JWT_SECRET="votre_jwt_secret"
+
+# Database
+DATABASE_CLIENT="postgres"
+DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${RAILWAY_PRIVATE_DOMAIN}:5432/${POSTGRES_DB}
+DATABASE_SSL=true
+DATABASE_SSL_REJECT_UNAUTHORIZED=false
+
+# Strapi
+NODE_ENV="production"
+STRAPI_ADMIN_PUBLIC_URL=https://${RAILWAY_PUBLIC_DOMAIN}
+STRAPI_URL=https://${RAILWAY_PUBLIC_DOMAIN}
+```
+
+### 4. Configuration des fichiers
+
+#### config/database.js
+
+```javascript
+module.exports = ({ env }) => ({
+  connection: {
+    client: "postgres",
+    connection: {
+      connectionString: env("DATABASE_URL"),
+      ssl: {
+        rejectUnauthorized: false,
+      },
+    },
+    debug: false,
+  },
+});
+```
+
+#### railway.toml
+
+```toml
+[build]
+builder = "nixpacks"
+buildCommand = "npm install"
+
+[deploy]
+startCommand = "npm run start"
+healthcheckPath = "/admin"
+healthcheckTimeout = 100
+restartPolicyType = "on_failure"
+
+[deploy.envs]
+NODE_ENV = "production"
+```
+
+## Déploiement
+
+1. Pousser les modifications sur GitHub :
+
+```bash
+git add .
+git commit -m "Configuration pour Railway"
+git push origin main
+```
+
+2. Railway déploiera automatiquement l'application
+
+## Accès à l'application
+
+- L'application sera disponible à l'URL fournie par Railway
+- Le panneau d'administration sera accessible à `/admin`
+- Créer un compte administrateur lors de la première connexion
+
+## Notes importantes
+
+- Ne jamais commiter les fichiers .env
+- Garder les secrets en sécurité
+- Toujours utiliser SSL pour la base de données
+- Vérifier les logs en cas d'erreur de déploiement
+
+## Support
+
+En cas de problème :
+
+1. Vérifier les logs de déploiement
+2. S'assurer que toutes les variables d'environnement sont correctes
+3. Vérifier la connexion à la base de données
+4. Consulter la [documentation Strapi](https://docs.strapi.io)
+
+---
+
+Dernière mise à jour : 4 mars 2024
