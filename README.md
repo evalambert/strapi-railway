@@ -59,3 +59,11 @@ Feel free to check out the [Strapi GitHub repository](https://github.com/strapi/
 ---
 
 <sub>🤫 Psst! [Strapi is hiring](https://strapi.io/careers).</sub>
+
+# Strapi Railway Application
+
+This is a Strapi application configured for deployment on Railway.
+
+## Deployment Status
+
+Last updated: March 4, 2024
